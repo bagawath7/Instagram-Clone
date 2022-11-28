@@ -158,11 +158,11 @@
             [self.callbackTokens removeObjectIdenticalTo:token];
         }
         SDWebImageDownloaderCompletedBlock completedBlock = ((SDWebImageDownloaderOperationToken *)token).completedBlock;
-        dispatch_main_async_safe(^{
-            if (completedBlock) {
+        if (completedBlock) {
+            dispatch_main_async_safe(^{
                 completedBlock(nil, nil, [NSError errorWithDomain:SDWebImageErrorDomain code:SDWebImageErrorCancelled userInfo:@{NSLocalizedDescriptionKey : @"Operation cancelled by user during sending the request"}], YES);
-            }
-        });
+            });
+        }
     }
     return shouldCancel;
 }
@@ -244,7 +244,10 @@
             self.coderQueue.qualityOfService = NSQualityOfServiceDefault;
         }
         [self.dataTask resume];
-        NSArray<SDWebImageDownloaderOperationToken *> *tokens = [self.callbackTokens copy];
+        NSArray<SDWebImageDownloaderOperationToken *> *tokens;
+        @synchronized (self) {
+            tokens = [self.callbackTokens copy];
+        }
         for (SDWebImageDownloaderOperationToken *token in tokens) {
             if (token.progressBlock) {
                 token.progressBlock(0, NSURLResponseUnknownLength, self.request.URL);
@@ -472,18 +475,22 @@ didReceiveResponse:(NSURLResponse *)response
         if (self.coderQueue.operationCount == 0) {
             // NSOperation have autoreleasepool, don't need to create extra one
             @weakify(self);
-            [self.coderQueue addOperationWithBlock:^{
+            NSOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
                 @strongify(self);
                 if (!self) {
                     return;
                 }
                 UIImage *image = SDImageLoaderDecodeProgressiveImageData(imageData, self.request.URL, NO, self, [[self class] imageOptionsFromDownloaderOptions:self.options], self.context);
+                if (self.isFinished) {
+                    return;
+                }
                 if (image) {
                     // We do not keep the progressive decoding image even when `finished`=YES. Because they are for view rendering but not take full function from downloader options. And some coders implementation may not keep consistent between progressive decoding and normal decoding.
                     
                     [self callCompletionBlocksWithImage:image imageData:nil error:nil finished:NO];
                 }
             }];
+            [self.coderQueue addOperation:operation];
         }
     }
     
@@ -561,8 +568,16 @@ didReceiveResponse:(NSURLResponse *)response
                     // decode the image in coder queue, cancel all previous decoding process
                     [self.coderQueue cancelAllOperations];
                     @weakify(self);
+                    // call done after all different variant completed block was dispatched
+                    NSOperation *doneOperation = [NSBlockOperation blockOperationWithBlock:^{
+                        @strongify(self);
+                        if (!self) {
+                            return;
+                        }
+                        [self done];
+                    }];
                     for (SDWebImageDownloaderOperationToken *token in tokens) {
-                        [self.coderQueue addOperationWithBlock:^{
+                        NSOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
                             @strongify(self);
                             if (!self) {
                                 return;
@@ -601,24 +616,11 @@ didReceiveResponse:(NSURLResponse *)response
                                 [self callCompletionBlockWithToken:token image:image imageData:imageData error:nil finished:YES];
                             }
                         }];
+                        [doneOperation addDependency:operation];
+                        [self.coderQueue addOperation:operation];
                     }
-                    if (@available(iOS 13.0, tvOS 13.0, macOS 10.15, watchOS 6.0, *)) {
-                        [self.coderQueue addBarrierBlock:^{
-                            @strongify(self);
-                            if (!self) {
-                                return;
-                            }
-                            [self done];
-                        }];
-                    } else {
-                        dispatch_barrier_async(self.coderQueue.underlyingQueue, ^{
-                            @strongify(self);
-                            if (!self) {
-                                return;
-                            }
-                            [self done];
-                        });
-                    }
+                    // call [self done] after all completed block was dispatched
+                    [self.coderQueue addOperation:doneOperation];
                 }
             } else {
                 [self callCompletionBlocksWithError:[NSError errorWithDomain:SDWebImageErrorDomain code:SDWebImageErrorBadImageData userInfo:@{NSLocalizedDescriptionKey : @"Image data is nil"}]];
@@ -695,11 +697,12 @@ didReceiveResponse:(NSURLResponse *)response
         tokens = [self.callbackTokens copy];
     }
     for (SDWebImageDownloaderOperationToken *token in tokens) {
-        dispatch_main_async_safe(^{
-            if (token.completedBlock) {
-                token.completedBlock(image, imageData, error, finished);
-            }
-        });
+        SDWebImageDownloaderCompletedBlock completedBlock = token.completedBlock;
+        if (completedBlock) {
+            dispatch_main_async_safe(^{
+                completedBlock(image, imageData, error, finished);
+            });
+        }
     }
 }
 
@@ -708,11 +711,12 @@ didReceiveResponse:(NSURLResponse *)response
                            imageData:(nullable NSData *)imageData
                                error:(nullable NSError *)error
                             finished:(BOOL)finished {
-    dispatch_main_async_safe(^{
-        if (token.completedBlock) {
-            token.completedBlock(image, imageData, error, finished);
-        }
-    });
+    SDWebImageDownloaderCompletedBlock completedBlock = token.completedBlock;
+    if (completedBlock) {
+        dispatch_main_async_safe(^{
+            completedBlock(image, imageData, error, finished);
+        });
+    }
 }
 
 @end

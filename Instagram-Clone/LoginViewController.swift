@@ -64,22 +64,23 @@ class LoginViewController: UIViewController {
         return button
     }()
     
-    let forgotPasswordButton: UIButton = {
+    private lazy var forgotPasswordButton: UIButton = {
         let button = UIButton(type: .system)
         button.attributedTitle(firstPart: "Forgot your password ?", secondPart: "Get help signing in.")
+        button.addTarget(self, action: #selector(handleShowResetPassword), for: .touchUpInside)
+        
         return button
     }()
     
    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.hideKeyboardWhenTappedAround() 
         
         setup()
         layout()
         observeChanges()
         style()
-        // Do any additional setup after loading the view.
         
     }
     
@@ -148,6 +149,17 @@ extension LoginViewController{
             nextVC, animated: true)
         
     }
+    
+    
+    @objc func handleShowResetPassword(){
+        let controller = ResetPasswordController()
+        controller.delegate = self
+        controller.email = emailTextField.text
+        navigationController?.pushViewController(controller, animated: true)
+        
+        
+    }
+    
     @objc func textDidChange(sender:UITextField){
         if sender == emailTextField{
             viewmodel.email = sender.text
@@ -165,5 +177,16 @@ extension LoginViewController{
         loginButton.setTitleColor(viewmodel.buttomTitleColor, for: .normal)
         
     }
+    
+}
+
+
+extension LoginViewController:ResetPasswordControllerDelegate{
+    func controllerDidSendResetPasswordLink(_ controller: ResetPasswordController) {
+        navigationController?.popViewController(animated: true)
+        showMessage(withTitle: "Success", message: "We sent a link to your email to reset your password")
+    }
+    
+    
     
 }

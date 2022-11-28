@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        layout.minimumLineSpacing = 0
     
        window?.rootViewController =  MainTabController()
-//        window?.rootViewController = UINavigationController(rootViewController: LoginViewController())
+//        window?.rootViewController = UINavigationController(rootViewController:  LoginViewController())
        window?.makeKeyAndVisible()
 //
         guard let _ = (scene as? UIWindowScene) else { return }

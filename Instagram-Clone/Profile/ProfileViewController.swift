@@ -9,14 +9,16 @@ import UIKit
 import FirebaseAuth
 
 protocol ProfileDisplayLogic:AnyObject{
-   
+    func update(stats: UserModel.ViewModel.StatsViewModel)
+    func update(posts:[UserfeedModel.ViewModel.Post])
+
 }
 
 class ProfileViewController: UICollectionViewController {
     
     var intractor:ProfileBussinessLogic!
     var user: UserModel.ViewModel.User
-    
+    var posts = [UserfeedModel.ViewModel.Post]()
     
       
     
@@ -42,6 +44,8 @@ class ProfileViewController: UICollectionViewController {
         layout()
         checkIfUserIsFollowed()
         fetchUserStats()
+        fetchPosts()
+        
        
         
 //        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
@@ -51,6 +55,10 @@ class ProfileViewController: UICollectionViewController {
         navigationController?.view.tintColor = .black
         
     }
+    
+    
+    
+    
     
     func setup(){
         
@@ -76,18 +84,18 @@ class ProfileViewController: UICollectionViewController {
       
     }
     func checkIfUserIsFollowed(){
-        ProfileWorker.profileworker.checkIfUserIsFollowed(uid: user.uid) { isFollowed in
+        ProfileWorker.checkIfUserIsFollowed(uid: user.uid) { isFollowed in
             self.user.isFollowed = isFollowed
             self.collectionView.reloadData()
         }
     }
     
     func fetchUserStats(){
-        intractor.fetchUserStats(uid: user.uid) { stats in
-            self.user.stats = stats
-            print(stats)
-            self.collectionView.reloadData()
-        }
+        intractor.fetchUserStats(uid: user.uid)
+    }
+    
+    func fetchPosts(){
+        intractor.fetchPosts(forUser: user.uid)
     }
     @objc func logout(){
         do{
@@ -116,11 +124,12 @@ class ProfileViewController: UICollectionViewController {
 
 extension ProfileViewController{
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return posts.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ProfileCell
+        cell.viewmodel = UserfeedModel.ViewModel.PostViewModel(post: posts[indexPath.row])
         return cell
     }
     
@@ -137,6 +146,11 @@ extension ProfileViewController{
 
 extension ProfileViewController{
     
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let controller = UserfeedViewController(collectionViewLayout: UICollectionViewFlowLayout())
+        controller.post = posts[indexPath.row]
+        navigationController?.pushViewController(controller, animated: true)
+    }
     
 }
 
@@ -164,6 +178,17 @@ extension ProfileViewController:UICollectionViewDelegateFlowLayout{
 
 
 extension ProfileViewController:ProfileDisplayLogic{
+    func update(posts: [UserfeedModel.ViewModel.Post]) {
+        self.posts = posts
+        self.collectionView.reloadData()
+    }
+    
+    func update(stats: UserModel.ViewModel.StatsViewModel) {
+        user.stats = stats
+        collectionView.reloadData()
+    }
+   
+    
    
     
     
@@ -171,19 +196,27 @@ extension ProfileViewController:ProfileDisplayLogic{
 
 extension ProfileViewController:ProfileHeaderDelegate{
     func header(_ profileHeader: ProfileHeaderCell, didTapActionButtonFor user: UserModel.ViewModel.User) {
+        guard let tab = tabBarController as? MainTabController else {return}
+        guard let currentuser = tab.user else {return}
         if user.isCurrentUser{
-            print("Edit")
+            print(user.uid)
+            print(Auth.auth().currentUser?.uid)
         }
         
         else if user.isFollowed{
-            ProfileWorker.profileworker.unfollow(uid: user.uid) { _ in
+            ProfileWorker.unfollow(uid: user.uid) { _ in
                 self.user.isFollowed = false
                 self.fetchUserStats()
+                ProfileWorker.updateUserFeedAfterFollowing(user: user,didFollow: false)
+
             }
         }else{
-            ProfileWorker.profileworker.follow(uid: user.uid) { error in
+            ProfileWorker.follow(uid: user.uid) { error in
                 self.user.isFollowed = true
                 self.fetchUserStats()
+                ProfileWorker.updateUserFeedAfterFollowing(user: user,didFollow: true)
+                NotificatonWorker.uploadNotification(toUid: user.uid, fromUser: currentuser, type: .follow)
+                
             }
         }
         

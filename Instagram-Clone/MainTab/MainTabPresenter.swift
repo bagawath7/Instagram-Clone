@@ -15,13 +15,13 @@ protocol MainTabPresentationLogic:AnyObject{
 
 class MainTabPresenter:MainTabPresentationLogic{
     
-    weak var viewcontroller:MainTabDisplayLogic!
+    weak var viewcontroller:MainTabDisplayLogic?
     func presentProfile(response: DocumentSnapshot) {
         if let dictionary = response.data(){
             let user = UserModel.ViewModel.User(dictionary: dictionary)
             print(user)
             DispatchQueue.main.async {
-                self.viewcontroller.update(user: user)
+                self.viewcontroller?.update(user: user)
             }
         }
     }

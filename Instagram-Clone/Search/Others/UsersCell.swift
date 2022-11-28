@@ -48,11 +48,13 @@ class UsersCell: UITableViewCell {
         profileImageView.setDimensions(height: 48, width: 48)
         profileImageView.layer.cornerRadius = 48/2
         profileImageView.centerY(inView: self,leftAnchor: leadingAnchor,paddingLeft: 12)
+        
         let stack = UIStackView(arrangedSubviews: [usernameLabel,fullnameLabel])
         stack.spacing = 4
         stack.axis = .vertical
         stack.alignment = .leading
         addSubview(stack)
+        
         stack.centerY(inView: profileImageView,leftAnchor: profileImageView.trailingAnchor,paddingLeft: 8)
     }
     

@@ -21,6 +21,7 @@ struct ProfileModel{
         
         
         struct HeaderViewmodel{
+            
             let user:UserModel.ViewModel.User
             
             var fullname:String{
@@ -38,14 +39,14 @@ struct ProfileModel{
                 
             }
             var followButtonBackGroundColor : UIColor {
-                if !user.isFollowed {
+                if !user.isFollowed && !user.isCurrentUser {
                     return .systemBlue
                 }
                 return .white
                 
             }
             var followButtonTextColor: UIColor{
-                if !user.isFollowed {
+                if !user.isFollowed  && !user.isCurrentUser{
                     return .white
                 }
                 return .black
@@ -60,7 +61,7 @@ struct ProfileModel{
             }
             
             var noOfPosts:NSAttributedString{
-                return StatsTextlabel(value: 7, label: "Posts")
+                return StatsTextlabel(value: user.stats.posts, label: "Posts")
             }
             
             func StatsTextlabel(value: Int,label: String) -> NSAttributedString

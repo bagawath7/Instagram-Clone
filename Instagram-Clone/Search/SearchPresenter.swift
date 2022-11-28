@@ -14,7 +14,7 @@ protocol SearchPresentationLogic:AnyObject{
 
 class SearchPresenter:SearchPresentationLogic{
     func presentUsers(snapshot: QuerySnapshot) {
-        let users = snapshot.documents.map { UserModel.ViewModel.User(dictionary: $0.data())}
+        let users = snapshot.documents.map { UserModel.ViewModel.User(dictionary: $0.data())}.filter { $0.uid != Auth.auth().currentUser?.uid }
         viewcontroller.updateUsers(users: users)
         
     }

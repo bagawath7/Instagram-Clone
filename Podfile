@@ -13,6 +13,7 @@ target 'Instagram-Clone' do
   pod 'ActiveLabel'
   pod 'SDWebImage'
   pod 'YPImagePicker'
+  pod 'JGProgressHUD'
   # Pods for Instagram-Clone
 
 end

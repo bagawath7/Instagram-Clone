@@ -6,15 +6,35 @@
 //
 
 import UIKit
+import SDWebImage
+
+protocol FeedCellDelegate: AnyObject{
+    
+    func cell(_ cell:FeedCell,wantsToShowCommentsFor post:UserfeedModel.ViewModel.Post)
+    func cell(_ cell:FeedCell,didLikePost post:UserfeedModel.ViewModel.Post)
+    func cell(_ cell:FeedCell,wantstoShowProfileFor uid:String)
+    
+}
 
 class FeedCell: UICollectionViewCell {
     
-    let profileImageView: UIImageView = {
+    var delegate:FeedCellDelegate?
+    var viewModel: UserfeedModel.ViewModel.PostViewModel?{
+        didSet{
+            configure()        }
+    }
+    
+     lazy var profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
         iv.isUserInteractionEnabled = true
-        iv.image = UIImage(named: "bagawath.jpg")
+        iv.backgroundColor = .lightGray
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(showUserProfile))
+         
+         iv.addGestureRecognizer(tap)
+        
         return iv
     }()
     
@@ -23,56 +43,56 @@ class FeedCell: UICollectionViewCell {
         button.setTitleColor(.black, for: .normal)
         button.setTitle("Bagawath", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 13)
-        button.addTarget(self, action: #selector(didtapUsername), for: .touchUpInside)
+        button.addTarget(self, action: #selector(showUserProfile), for: .touchUpInside)
         return button
     }()
     
     private var postImageView: UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
+        iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
         iv.isUserInteractionEnabled = true
         iv.image = UIImage(named: "zoho.jpg")
         return iv
     }()
     
-    private lazy var likeButton:UIButton = {
+     lazy var likeButton:UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .black
         button.setImage(UIImage(named:"like_unselected" ), for: .normal)
-        button.addTarget(self, action: #selector(didtapUsername), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didtapLike), for: .touchUpInside)
         return button
     }()
     private lazy var commentButton:UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .black
         button.setImage(UIImage(named:"comment" ), for: .normal)
-        button.addTarget(self, action: #selector(didtapUsername), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didtapComments), for: .touchUpInside)
         return button
     }()
     
-    private lazy var shareButton:UIButton = {
-        let button = UIButton(type: .system)
-        button.tintColor = .black
-        button.setImage(UIImage(named:"send2" ), for: .normal)
-        button.addTarget(self, action: #selector(didtapUsername), for: .touchUpInside)
-        return button
-    }()
+//    private lazy var shareButton:UIButton = {
+//        let button = UIButton(type: .system)
+//        button.tintColor = .black
+//        button.setImage(UIImage(named:"send2" ), for: .normal)
+////        button.addTarget(self, action: #selector(showUserProfile), for: .touchUpInside)
+//        return button
+//    }()
     
-    private let likesLabel:UILabel = {
+     let likesLabel:UILabel = {
         let label = UILabel()
-        label.text = "100 likes"
         label.font = UIFont.boldSystemFont(ofSize: 12)
         label.textColor = .black
+        
         return label
         
     }()
     
     private let captionLabel:UILabel = {
         let label = UILabel()
-        label.text = "Zoho❤️"
         label.font = UIFont.boldSystemFont(ofSize: 12)
         label.textColor = .black
+        label.numberOfLines = 0
         return label
         
     }()
@@ -99,12 +119,24 @@ class FeedCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc func didtapUsername(){
-        print("Tapped")
+    @objc func showUserProfile(){
+        guard let viewModel = viewModel else {return}
+        delegate?.cell(self, wantstoShowProfileFor: viewModel.post.ownerUid)
     }
     
+    @objc func didtapLike(){
+        guard let viewModel = viewModel else {return}
+        delegate?.cell(self,didLikePost: viewModel.post)
+    }
+    
+    @objc func didtapComments(){
+        guard let viewModel = viewModel else {return}
+        delegate?.cell(self, wantsToShowCommentsFor: viewModel.post)
+    }
+    
+
     func layout(){
-        
+    
         //MARK: ProfileImageView
         addSubview(profileImageView)
         profileImageView.anchor(top: topAnchor,left: leadingAnchor, paddingTop: 12,paddingLeft: 12,width: 40, height: 40)
@@ -125,12 +157,12 @@ class FeedCell: UICollectionViewCell {
 
         
         
-        stackView = UIStackView(arrangedSubviews: [likeButton,commentButton,shareButton])
+        stackView = UIStackView(arrangedSubviews: [likeButton,commentButton])
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
         
         addSubview(stackView)
-        stackView.anchor(top: postImageView.bottomAnchor,width: 120,height: 50)
+        stackView.anchor(top: postImageView.bottomAnchor,width: 80,height: 50)
         
         //MARK: LikesLabel
         
@@ -141,12 +173,28 @@ class FeedCell: UICollectionViewCell {
 
         
         addSubview(captionLabel)
-        captionLabel.anchor(top: likesLabel.bottomAnchor,left: leadingAnchor,paddingTop: 8,paddingLeft: 8)
+        captionLabel.anchor(top: likesLabel.bottomAnchor,left: leadingAnchor,right: trailingAnchor,paddingTop: 8,paddingLeft: 8,paddingRight: 8)
         
         //MARK: PostTimeLabel
 
         addSubview(postTimeLabel)
         postTimeLabel.anchor(top: captionLabel.bottomAnchor,left: leadingAnchor,paddingTop:  8,paddingLeft:  8)
+        
+    }
+    
+    func configure(){
+        guard let viewModel = viewModel else {return}
+        captionLabel.text = viewModel.caption
+        postImageView.sd_setImage(with: viewModel.imageUrl)
+        
+        profileImageView.sd_setImage(with: viewModel.userprofileImageUrl)
+        usernameButton.setTitle(viewModel.username, for: .normal)
+        likesLabel.text = viewModel.likesLabelText
+        postTimeLabel.text = "\(viewModel.timestampString ?? "10") ago"
+//        likesLabel.isHidden = false
+        
+        likeButton.tintColor = viewModel.likeButtonTintColor
+        likeButton.setImage(viewModel.likeButtonImage, for: .normal)
         
     }
    

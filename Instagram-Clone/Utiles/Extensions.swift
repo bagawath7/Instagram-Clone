@@ -7,9 +7,34 @@
 //
 
 import UIKit
+import JGProgressHUD
+
 
 extension UIViewController {
+    
+        
+    static let hud = JGProgressHUD(style: .dark)
+    
+    func showloader(_ show:Bool){
+        view.endEditing(true)
+        if show{
+            UIViewController.hud.show(in: view)
+            
+        }else{
+            UIViewController.hud.dismiss()
+        }
+    }
    
+    func hideKeyboardWhenTappedAround() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
     
     func configureGradientLayer() {
         let gradient = CAGradientLayer()

@@ -13,12 +13,8 @@ typealias FirestoreCompletion = (Error?) ->Void
 struct ProfileWorker{
     
     
-    static let profileworker = ProfileWorker()
     
-    private init(){
-        
-    }
-    func follow(uid: String, completion: @escaping (FirestoreCompletion)) {
+    static func follow(uid: String, completion: @escaping (FirestoreCompletion)) {
         if let currentUid = Auth.auth().currentUser?.uid{
             COLLECTION_FOLLOWING.document(currentUid).collection("user-following").document(uid).setData([:]){_ in
                 COLLECTION_FOLLOWERS.document(uid).collection("user-followers").document(currentUid).setData([:],completion: completion)
@@ -28,7 +24,7 @@ struct ProfileWorker{
         
     }
     
-    func unfollow(uid: String, completion: @escaping (FirestoreCompletion)) {
+    static func unfollow(uid: String, completion: @escaping (FirestoreCompletion)) {
         
         if let currentUid = Auth.auth().currentUser?.uid{
             COLLECTION_FOLLOWING.document(currentUid).collection("user-following").document(uid).delete{_ in
@@ -38,7 +34,7 @@ struct ProfileWorker{
         
     }
     
-    func checkIfUserIsFollowed(uid:String,completion:@escaping(Bool)->Void){
+    static func checkIfUserIsFollowed(uid:String,completion:@escaping(Bool)->Void){
         guard let currentUid = Auth.auth().currentUser?.uid else{return}
         
         COLLECTION_FOLLOWING.document(currentUid).collection("user-following").document(uid).getDocument { snapshot, error in
@@ -46,5 +42,58 @@ struct ProfileWorker{
             completion(isFollowed)
         }
     }
+    
+    
+    static func fetchPost(withPost postId: String,completion:@escaping(UserfeedModel.ViewModel.Post)->Void) {
+        COLLECTION_POSTS.document(postId).getDocument { snapshot, _ in
+            guard let snapshot = snapshot else {return}
+            guard let data = snapshot.data() else{return}
+            let post = UserfeedModel.ViewModel.Post(postId: snapshot.documentID, dictionary: data)
+            completion(post)
+        }
+    }
+    
+    
+    static func fetchFeedPosts(comepletion:@escaping([UserfeedModel.ViewModel.Post])->Void){
+        guard let uid = Auth.auth().currentUser?.uid else {return}
+        var posts = [UserfeedModel.ViewModel.Post]()
+        COLLECTION_USERS.document(uid).collection("user-feed").getDocuments { snapshot, error in
+            guard let snapshot = snapshot else {return}
+            if snapshot.isEmpty {
+                comepletion(posts)
+            }
+            else{
+                snapshot.documents.forEach({ document in
+                    fetchPost(withPost: document.documentID) { post in
+                        posts.append(post)
+                        posts.sort { $0.timestamp.seconds > $1.timestamp.seconds
+                        }
+                        comepletion(posts)
+                    }
+                })
+            }
+        }
+    }
+    
+    static func updateUserFeedAfterFollowing(user:UserModel.ViewModel.User,didFollow:Bool){
+        guard let uid = Auth.auth().currentUser?.uid else {return}
+        let query = COLLECTION_POSTS.whereField("ownerUid", isEqualTo: user.uid)
+        
+        query.getDocuments { snapshot, error in
+            guard let documents = snapshot?.documents else {return}
+            
+            let docIDs = documents.map({$0.documentID})
+            docIDs.forEach { id in
+                if didFollow{
+                    COLLECTION_USERS.document(uid).collection("user-feed").document(id).setData([:])
+                }else{
+                    COLLECTION_USERS.document(uid).collection("user-feed").document(id).delete()
+                }
+            }
+        }
+    }
+    
+   
+    
     
 }

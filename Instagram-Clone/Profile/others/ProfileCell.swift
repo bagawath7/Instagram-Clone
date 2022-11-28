@@ -11,7 +11,6 @@ class ProfileCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.backgroundColor = .systemPink
         addSubview(postImageView)
         postImageView.fillSuperview()
     }
@@ -20,6 +19,11 @@ class ProfileCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var viewmodel : UserfeedModel.ViewModel.PostViewModel? {
+        didSet{
+            configure()
+        }
+    }
     
     private let postImageView:UIImageView = {
         let iv = UIImageView()
@@ -28,4 +32,10 @@ class ProfileCell: UICollectionViewCell {
         iv.clipsToBounds = true
         return iv
     }()
+    
+    func configure(){
+        guard let viewmodel = viewmodel else {return }
+        
+        postImageView.sd_setImage(with: viewmodel.imageUrl)
+    }
 }

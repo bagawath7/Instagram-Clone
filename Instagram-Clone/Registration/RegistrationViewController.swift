@@ -67,6 +67,7 @@ class RegistrationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        self.hideKeyboardWhenTappedAround() 
         setup()
         observeChanges()
         layout()
@@ -170,12 +171,52 @@ extension RegistrationViewController{
     
     
     @objc func handleProfileImage(){
-        let picker = UIImagePickerController()
-        picker.delegate = self
-        picker.allowsEditing = true
-        self.present(picker, animated: true)
+        presentPhotoActionSheet()
+        
         
     }
+    func presentPhotoActionSheet(){
+            
+            let actionSheet = UIAlertController(title: "Profile Picture", message: "how would you select profile picture", preferredStyle: .actionSheet)
+            
+            actionSheet.addAction(UIAlertAction(title: "cancel", style: .cancel,handler: nil))
+            actionSheet.addAction(UIAlertAction(title: "Take Photo", style: .default,handler: { [weak self] _ in
+                self?.presentCamera()
+            }))
+            actionSheet.addAction(UIAlertAction(title: "Choose Photo", style: .default,handler: { [weak self] _ in
+                self?.presentPhotoPicker()
+            }))
+            present(actionSheet,animated: true)
+            
+            
+            
+        }
+        
+        private func presentCamera(){
+            let vc=UIImagePickerController()
+            vc.sourceType = .camera
+            vc.delegate = self
+            vc.allowsEditing = true
+            present(vc,animated: true)
+        }
+        
+        
+        private func presentPhotoPicker(){
+            let vc=UIImagePickerController()
+            vc.sourceType = .photoLibrary
+            vc.delegate = self
+            vc.allowsEditing = true
+            present(vc,animated: true)
+        }
+        
+        
+//        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+//            picker.dismiss(animated: true,completion: nil)
+//            let selectedImage = info[UIImagePickerController.InfoKey.originalImage ]
+//            profileImageButton.layer.borderWidth=0
+//            self.profileImageButton.setImage(selectedImage as? UIImage , for: .normal)
+//
+//        }
     
     
     
@@ -185,10 +226,12 @@ extension RegistrationViewController{
 extension RegistrationViewController:UIImagePickerControllerDelegate ,UINavigationControllerDelegate{
     
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+        if let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
             
             profileImage = image
+            plushPhotoButton.backgroundColor = .white
             plushPhotoButton.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+            plushPhotoButton.imageView?.contentMode = .scaleAspectFit
             plushPhotoButton.layer.cornerRadius = plushPhotoButton.frame.size.width / 2
             plushPhotoButton.layer.masksToBounds = true
             plushPhotoButton.layer.borderColor = UIColor.white.cgColor
