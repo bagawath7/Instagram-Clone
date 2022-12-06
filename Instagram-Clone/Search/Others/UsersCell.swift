@@ -27,7 +27,6 @@ class UsersCell: UITableViewCell {
         return iv
         
     }()
-    
     private let usernameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 14)
@@ -41,6 +40,7 @@ class UsersCell: UITableViewCell {
         label.textColor = .lightGray
         return label
     }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         

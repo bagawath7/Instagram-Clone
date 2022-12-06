@@ -18,23 +18,40 @@ struct NotificatonWorker{
     static func uploadNotification(toUid uid:String,fromUser user :UserModel.ViewModel.User,type: NotificationType,post:UserfeedModel.ViewModel.Post? = nil){
         guard let currentuid = Auth.auth().currentUser?.uid else {return}
         guard uid != currentuid else { return }
-        let docRef =         COLLECTION_NOTIFICATIONS.document(uid).collection("user-notifications").document()
-        var data:[String:Any] = ["timestamp":Timestamp(date: Date()),
-                                 "uid":user.uid,
-                                 "type":type.rawValue,
-                                 "id":docRef.documentID,
-                                 "userProfileImageUrl":user.profileImageUrl,
-                                 "username":user.username ]
+        
+        
+        COLLECTION_NOTIFICATIONS.document(uid).collection("user-notifications").getDocuments { snapshot, _ in
+            var flag = true
+            snapshot?.documents.forEach({ notificaftiondata in
+                let notificaiton =  notificaftiondata.data()
+                if (notificaiton["postId"] as? String == post?.postId &&
+                    notificaiton["type"] as! Int == type.rawValue){
+                    flag = false
+                    return
+                }
+            })
+            if flag{
+                let docRef =         COLLECTION_NOTIFICATIONS.document(uid).collection("user-notifications").document()
+                var data:[String:Any] = ["timestamp":Timestamp(date: Date()),
+                                         "uid":user.uid,
+                                         "type":type.rawValue,
+                                         "id":docRef.documentID,
+                                         "userProfileImageUrl":user.profileImageUrl,
+                                         "username":user.username ]
                 
-        if let post = post {
-            data["postId"] = post.postId
-            data["postImageUrl"] = post.imageurl
+                if let post = post {
+                    data["postId"] = post.postId
+                    data["postImageUrl"] = post.imageurl
+                }
+                
+                docRef.setData(data)
+                
+            }
         }
-                                 
-        docRef.setData(data)
+            
+
+        }
         
-        
-        
-    }
- 
 }
+ 
+

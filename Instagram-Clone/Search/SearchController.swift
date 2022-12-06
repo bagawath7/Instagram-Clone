@@ -24,6 +24,10 @@ class SearchController: UITableViewController {
         setup()
         layout()
         configureSearchController()
+       
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         intractor.fetchUsers()
     }
     

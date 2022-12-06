@@ -6,6 +6,8 @@
 //
 
 import UIKit
+
+
 import Firebase
 
 struct UserfeedModel{
@@ -13,6 +15,7 @@ struct UserfeedModel{
     struct FetchResponse{
         struct postdata{
             var snapshot : DocumentSnapshot
+            
         }
     }
     

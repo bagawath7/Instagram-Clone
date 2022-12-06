@@ -48,9 +48,12 @@ class NotificationsViewController: UITableViewController, NotificationsDisplayLo
         super.viewDidLoad()
         setup()
         configureTableView()
-        interactor?.fetchNotification()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        interactor?.fetchNotification()
+
+    }
     
     
     func checkIfUserIsFollowed(){
@@ -128,6 +131,8 @@ extension NotificationsViewController{
 //MARK: NotificationCellDelegate
 extension NotificationsViewController:NotificationCellDelegate{
     func cell(_ cell: NotificationCell, wantsToFollow uid: String) {
+        
+        
         showloader(true)
 
         ProfileWorker.follow(uid: uid) { _ in
@@ -139,6 +144,8 @@ extension NotificationsViewController:NotificationCellDelegate{
     }
     
     func cell(_ cell: NotificationCell, wantsToUnfollow uid: String) {
+        
+        
         showloader(true)
 
         ProfileWorker.unfollow(uid: uid) { _ in

@@ -10,26 +10,35 @@ import Firebase
 
 protocol UserfeedPresentationLogic:AnyObject{
 
-    func presentPosts(snapshot: [QueryDocumentSnapshot])
+    func presentPosts(snapshot: [UserfeedModel.FetchResponse.postdata])
     
-    func presentLikes(snapshot: DocumentSnapshot,post:UserfeedModel.ViewModel.Post)
+    func presentLikes(snapshot: UserfeedModel.FetchResponse.postdata,post:UserfeedModel.ViewModel.Post)
 }
 
 class UserfeedPresenter:UserfeedPresentationLogic{
-    func presentLikes(snapshot: DocumentSnapshot, post: UserfeedModel.ViewModel.Post) {
-        print(snapshot.exists)
-        viewcontroller.updateLikes(isLiked: snapshot.exists,post: post)
+    
+    func presentPosts(snapshot: [UserfeedModel.FetchResponse.postdata]) {
+        var posts = [UserfeedModel.ViewModel.Post]()
+
+        snapshot.forEach { postData in
+            guard let data = postData.snapshot.data() else{return}
+            let post = UserfeedModel.ViewModel.Post(postId: postData.snapshot.documentID, dictionary: data)
+                posts.append(post)
+        }
+        posts.sort { $0.timestamp.seconds > $1.timestamp.seconds }
+        viewcontroller.update(posts: posts)
+        
+        
     }
+    
+    func presentLikes(snapshot: UserfeedModel.FetchResponse.postdata, post: UserfeedModel.ViewModel.Post) {
+        
+        viewcontroller.updateLikes(isLiked: snapshot.snapshot.exists,post: post)
+    }
+    
    
     
-    func presentPosts(snapshot: [QueryDocumentSnapshot]) {
-        let posts = snapshot.map { UserfeedModel.ViewModel.Post(postId: $0.documentID, dictionary: $0.data())
-        }
-        viewcontroller.update(posts: posts)
-    }
-    
-    
-
+   
   weak var viewcontroller:UserfeedDisplayLogic!
     
 }

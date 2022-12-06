@@ -24,10 +24,11 @@ struct UserModel{
         }
         struct User{
             let email:String
-            let fullname:String
-            let username:String
-            let profileImageUrl:String
+            var fullname:String
+            var username:String
+            var profileImageUrl:String
             let uid: String
+            var bio:String?
             
             var isCurrentUser:Bool{
                 return Auth.auth().currentUser?.uid == uid

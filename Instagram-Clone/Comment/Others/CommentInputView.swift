@@ -8,9 +8,10 @@ import UIKit
 
 protocol CustomInputAccessoryViewDelegate: AnyObject {
     func inputView(_ inputView: CommentInputView, wantsToUploadComment message: String)
+    
 }
 
-class CommentInputView: UIView {
+class CommentInputView: UIView, UITextViewDelegate {
     
     // MARK: - Properties
     
@@ -20,6 +21,7 @@ class CommentInputView: UIView {
         let tv = UITextView()
         tv.font = UIFont.systemFont(ofSize: 16)
         tv.isScrollEnabled = false
+        tv.delegate = self
         return tv
     }()
     
@@ -27,7 +29,8 @@ class CommentInputView: UIView {
         let button = UIButton(type: .system)
         button.setTitle("Post", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(UIColor(white: 0, alpha: 0.4), for: .normal)
+        button.isEnabled = false
         button.addTarget(self, action: #selector(handleComment), for: .touchUpInside)
         return button
     }()
@@ -94,4 +97,21 @@ class CommentInputView: UIView {
         CommentInputTextView.text = nil
         placeholderLabel.isHidden = false
     }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.text.isEmpty{
+            postButton.isEnabled = false
+            postButton.setTitleColor(UIColor(white: 0, alpha: 0.4), for: .normal)
+
+        }
+        else{
+            postButton.isEnabled = true
+            postButton.setTitleColor(.black, for: .normal)
+
+        }
+    }
+    
+    
+    
 }
+

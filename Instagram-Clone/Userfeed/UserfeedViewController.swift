@@ -34,13 +34,11 @@ class UserfeedViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
-        fetchPosts()
+//        fetchPosts()
         configureUI()
         collectionView.backgroundColor = .white
         checkIfUserIsLoggedIn()
-        if  post != nil{
-            checkIfUserLikedPost()
-        }
+        checkIfUserLikedPost()
         
         navigationController?.view.tintColor = .black
         
@@ -51,26 +49,19 @@ class UserfeedViewController: UICollectionViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-//        fetchPosts()
+       fetchPosts()
 //        collectionView.reloadData()
     }
     
     
     func fetchPosts(){
         guard post == nil
-        
         else {
             self.collectionView.refreshControl?.endRefreshing()
             return}
         
         
-        ProfileWorker.fetchFeedPosts { posts in
-            self.posts = posts
-            self.collectionView.refreshControl?.endRefreshing()
-            
-            
-        }
-        
+        intractor?.fetchFeedPosts()
     }
     
     func setup(){
@@ -156,20 +147,23 @@ extension UserfeedViewController: UICollectionViewDelegateFlowLayout{
 
 extension UserfeedViewController:UserfeedDisplayLogic{
     func updateLikes(isLiked: Bool, post: UserfeedModel.ViewModel.Post) {
-        if let index = self.posts.firstIndex(where: { $0.postId == post.postId}){
-            
-            self.posts[index].didLike = isLiked
-            
-        }
+        if self.post != nil{
+            self.post?.didLike = isLiked
+        }else{
+            if let index = self.posts.firstIndex(where: { $0.postId == post.postId}){
+                
+                self.posts[index].didLike = isLiked
+                
+            }
+            }
+       
     }
     
     
     func update(posts: [UserfeedModel.ViewModel.Post]) {
         self.posts = posts
         collectionView.refreshControl?.endRefreshing()
-        
         checkIfUserLikedPost()
-        
         self.collectionView.reloadData()
         
     }

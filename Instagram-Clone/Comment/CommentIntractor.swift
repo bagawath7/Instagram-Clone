@@ -16,7 +16,7 @@ protocol CommentBusinessLogic:AnyObject{
 
 class CommentIntractor:CommentBusinessLogic{
     func fetchComments(forPost postID: String){
-        let query = COLLECTION_POSTS.document(postID).collection("comments").order(by: "timestamp",descending: true)
+        let query = COLLECTION_POSTS.document(postID).collection("comments").order(by:"timestamp" ,descending: true)
         query.addSnapshotListener { snapshot, error in
             if let snapshot = snapshot{
                 self.presenter.presentPosts(snapshot: snapshot)

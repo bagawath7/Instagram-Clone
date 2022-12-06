@@ -41,7 +41,8 @@ struct AuthService{
                                           "fullname":credentials.fullname,
                                           "profileImageUrl": imageUrl,
                                           "username":credentials.username,
-                                          "uid":uid]
+                                          "uid":uid,
+                                          "bio":""]
                 COLLECTION_USERS.document(uid).setData(data,completion: completion)
             }
         }

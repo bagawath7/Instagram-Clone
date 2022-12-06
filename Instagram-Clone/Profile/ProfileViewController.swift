@@ -42,9 +42,9 @@ class ProfileViewController: UICollectionViewController {
         super.viewDidLoad()
         setup()
         layout()
-        checkIfUserIsFollowed()
-        fetchUserStats()
-        fetchPosts()
+//        checkIfUserIsFollowed()
+//        fetchUserStats()
+//        fetchPosts()
         
        
         
@@ -74,6 +74,13 @@ class ProfileViewController: UICollectionViewController {
 //        intractor.fetchuser()
 
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        checkIfUserIsFollowed()
+        fetchUserStats()
+        fetchPosts()
+        collectionView.reloadData()
     }
     
    func layout(){
