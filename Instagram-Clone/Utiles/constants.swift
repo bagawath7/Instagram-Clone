@@ -1,10 +1,10 @@
 //
-//  Constants.swift
-//  TwitterTutorial
+//  constants.swift
+//  Instagram-Clone
 //
-//  Created by Stephen Dowless on 1/18/20.
-//  Copyright © 2020 Stephan Dowless. All rights reserved.
+//  Created by zs-mac-4 on 06/12/22.
 //
+
 
 import Foundation
 import Firebase
@@ -18,14 +18,12 @@ let COLLECTION_NOTIFICATIONS = Firestore.firestore().collection("notifications")
 
 
 
-let STORAGE_REF = Storage.storage().reference()
-let STORAGE_PROFILE_IMAGES = STORAGE_REF.child("profile_images")
 
-let REF_USER_REPLIES = Firestore.firestore().collection("user-replies")
-let REF_USER_USERNAMES = Firestore.firestore().collection("user-usernames")
-let REF_MESSAGES = Firestore.firestore().collection("messages")
-let REF_USER_MESSAGES = Firestore.firestore().collection("user-messages")
-let REF_USER_FEED = Firestore.firestore().collection("user-feeds")
+let USER_REPLIES = Firestore.firestore().collection("user-replies")
+let USER_USERNAMES = Firestore.firestore().collection("user-usernames")
+let MESSAGES = Firestore.firestore().collection("messages")
+let USER_MESSAGES = Firestore.firestore().collection("user-messages")
+let USER_FEED = Firestore.firestore().collection("user-feeds")
 
 let KEY_EMAIL = "email"
 let KEY_FULLNAME = "fullname"
@@ -44,4 +42,3 @@ let KEY_MESSAGE_TEXT = "messageText"
 let KEY_MESSAGE_READ = "read"
 let KEY_RETWEET_USERNAME = "retweetUsername"
 let KEY_BIO = "bio"
-

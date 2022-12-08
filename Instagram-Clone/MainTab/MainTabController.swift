@@ -122,6 +122,7 @@ extension MainTabController:AuthenticationDelegate{
             }
             picker.dismiss(animated: false){
                 guard let selectedImage = items.singlePhoto?.image else {return }
+               
                 
                 let controller = UploadPostController()
                 controller.currentUser = self.user
@@ -144,12 +145,13 @@ extension MainTabController:UITabBarControllerDelegate{
         let index = viewControllers?.firstIndex(of: viewController)
         if index == 2{
             var config = YPImagePickerConfiguration()
-            config.library.mediaType = .photo
+            config.library.mediaType = YPlibraryMediaType.photo
             config.shouldSaveNewPicturesToAlbum = false
-            config.screens = [.library]
+            config.startOnScreen = YPPickerScreen.library
+            config.screens = [.library, .photo]
             config.hidesBottomBar = false
             config.hidesStatusBar = false
-            config.library.maxNumberOfItems = 1
+            config.library.maxNumberOfItems = 3
             
             let picker = YPImagePicker(configuration: config)
             picker.toolbar.tintColor = .black

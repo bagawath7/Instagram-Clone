@@ -14,11 +14,10 @@
 		121DE3A0293475AE009FBACE /* ResetPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121DE39C293475AE009FBACE /* ResetPasswordController.swift */; };
 		121DE3A1293475AE009FBACE /* ResetPasswordInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121DE39D293475AE009FBACE /* ResetPasswordInteractor.swift */; };
 		121DE3A3293488B0009FBACE /* ResetPasswordWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121DE3A2293488B0009FBACE /* ResetPasswordWorker.swift */; };
-		1220E76B293F1A430099ACE3 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1220E76A293F1A430099ACE3 /* Constants.swift */; };
 		1220E76C293F24450099ACE3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 124C520E291250F5004B8A96 /* GoogleService-Info.plist */; };
+		1220E786293F3AC80099ACE3 /* constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1220E785293F3AC80099ACE3 /* constants.swift */; };
 		12264A392918FACE00500F33 /* ProfileIntractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12264A382918FACE00500F33 /* ProfileIntractor.swift */; };
 		12264A3B2918FAF100500F33 /* ProfilePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12264A3A2918FAF100500F33 /* ProfilePresenter.swift */; };
-		12264A3E2918FE8100500F33 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12264A3D2918FE8100500F33 /* Constants.swift */; };
 		12264A40291901AF00500F33 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12264A3F291901AF00500F33 /* UserModel.swift */; };
 		122FD6862910089500C7351E /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 122FD6852910089500C7351E /* CustomTextField.swift */; };
 		12377C5A291D167F00D85A04 /* ProfileHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12377C59291D167F00D85A04 /* ProfileHelper.swift */; };
@@ -78,7 +77,7 @@
 		121DE39C293475AE009FBACE /* ResetPasswordController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordController.swift; sourceTree = "<group>"; };
 		121DE39D293475AE009FBACE /* ResetPasswordInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordInteractor.swift; sourceTree = "<group>"; };
 		121DE3A2293488B0009FBACE /* ResetPasswordWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordWorker.swift; sourceTree = "<group>"; };
-		1220E76A293F1A430099ACE3 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		1220E785293F3AC80099ACE3 /* constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = constants.swift; sourceTree = "<group>"; };
 		12264A382918FACE00500F33 /* ProfileIntractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileIntractor.swift; sourceTree = "<group>"; };
 		12264A3A2918FAF100500F33 /* ProfilePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePresenter.swift; sourceTree = "<group>"; };
 		12264A3D2918FE8100500F33 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -191,8 +190,8 @@
 		12264A3C2918FE4E00500F33 /* Utiles */ = {
 			isa = PBXGroup;
 			children = (
-				1220E76A293F1A430099ACE3 /* Constants.swift */,
 				124BCCD1290BDE3A00409898 /* Extensions.swift */,
+				1220E785293F3AC80099ACE3 /* constants.swift */,
 			);
 			path = Utiles;
 			sourceTree = "<group>";
@@ -531,7 +530,6 @@
 				124BCCC0290BD4E300409898 /* LoginViewController.swift in Sources */,
 				12377C61291E443500D85A04 /* PostWorker.swift in Sources */,
 				12F99B83292B57D70044901B /* CommentModel.swift in Sources */,
-				1220E76B293F1A430099ACE3 /* Constants.swift in Sources */,
 				12DE698C2924CA4300EF024D /* CommentInputView.swift in Sources */,
 				12F99B87292B84B80044901B /* CommentPresenter.swift in Sources */,
 				12CA79C5291B57E300032208 /* SearchModel.swift in Sources */,
@@ -556,13 +554,13 @@
 				12377C65291E6ABB00D85A04 /* UserfeedPresenter.swift in Sources */,
 				12264A392918FACE00500F33 /* ProfileIntractor.swift in Sources */,
 				12377C63291E6AA600D85A04 /* UserfeedIntractor.swift in Sources */,
-				12264A3E2918FE8100500F33 /* Constants.swift in Sources */,
 				12CA79C0291A7EE900032208 /* SearchIntractor.swift in Sources */,
 				12377C5F291E24F500D85A04 /* InputTextView.swift in Sources */,
 				12264A3B2918FAF100500F33 /* ProfilePresenter.swift in Sources */,
 				12CA79C2291A7F6400032208 /* SearchPresenter.swift in Sources */,
 				12CA7996291A3E3900032208 /* MainTabIntractor.swift in Sources */,
 				12CA79BC291A77D200032208 /* SearchController.swift in Sources */,
+				1220E786293F3AC80099ACE3 /* constants.swift in Sources */,
 				12F99B81292B48920044901B /* CommentWorker.swift in Sources */,
 				12377C67291E6CD100D85A04 /* UserfeedModel.swift in Sources */,
 				124BCCD2290BDE3A00409898 /* Extensions.swift in Sources */,

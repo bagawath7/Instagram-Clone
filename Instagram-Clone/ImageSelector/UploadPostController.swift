@@ -8,6 +8,7 @@
 import UIKit
  
 protocol UploadPostControllerDelegate: AnyObject{
+    
     func controllerDidFinishUploadingPost(_ controller: UploadPostController)
     
 }

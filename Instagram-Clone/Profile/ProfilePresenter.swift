@@ -21,7 +21,7 @@ class ProfilePresenter:ProfilePresentationLogic{
         
        let stats = UserModel.ViewModel.StatsViewModel(followers: followers, following: following,posts: posts)
        
-       viewcontroller.update(stats: stats)
+       viewcontroller?.update(stats: stats)
     }
     
     func presentPosts(snapshot: [QueryDocumentSnapshot]) {
@@ -29,9 +29,9 @@ class ProfilePresenter:ProfilePresentationLogic{
             }
         posts.sort { $0.timestamp.seconds > $1.timestamp.seconds
         }
-            viewcontroller.update(posts: posts)
+            viewcontroller?.update(posts: posts)
         }
-    weak var viewcontroller:ProfileDisplayLogic!
+    weak var viewcontroller:ProfileDisplayLogic?
 
     }
    
